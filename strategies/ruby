@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# This is the default deliver strategy.
+# It uses git push, rvm & foreman to generate upstart jobs
+
+STRATEGY_VARS="APP_USER DELIVER_TO SERVERS"
+
+# This function must be present since deliver will call it directly
+# Everything inside it or around it are only limited by your imagination : )
+#
+run() {
+  # TODO
+  # If remote is up-to-date, finish early
+  init_app_remotely &&
+  git_push &&
+  git_reset_remote &&
+  git_submodules &&
+  rvmrc_trust &&
+  bundle_install &&
+  foreman_export &&
+  upstart
+}
