@@ -1,3 +1,10 @@
+### What's new in deliver 0.8.0
+
+#### Deprecations
+
+BRANCH has been removed.
+SERVER & SERVERS has been removed.
+
 ### What's new in deliver 0.7.0
 
 * **shared** strategy with file permissions support (think www-data,

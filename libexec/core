@@ -28,13 +28,10 @@ __remote_friendly() {
 # until we're ready to overwrite everything set from other sources
 #
 __capture_runtime_configs() {
-  # DEPRECATE as of v0.8.0
-  RUNTIME_SERVERS="$(__remote_friendly "$SERVER $SERVERS $HOSTS")"
-  RUNTIME_HOSTS="$RUNTIME_SERVERS"
+  RUNTIME_HOSTS="$(__remote_friendly "$HOSTS")"
 
   RUNTIME_GIT_PUSH="$GIT_PUSH"
-  # DEPRECATE as of v0.8.0
-  RUNTIME_REFSPEC="${BRANCH:=$REFSPEC}"
+  RUNTIME_REFSPEC="$REFSPEC"
   RUNTIME_REVISION="$REVISION"
   RUNTIME_LOG_FILE="$LOG_FILE"
   RUNTIME_APP="$APP"

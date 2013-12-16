@@ -31,17 +31,16 @@ fi
 
 # Configure which refspec to push remotely
 #
-__add_to_deprecations "BRANCH" "v0.8.0"
 if [ -z "$REFSPEC" ]
 then
-  REFSPEC="${BRANCH:=master}"
+  REFSPEC="${REFSPEC:=master}"
 fi
 
 # Configure which revision to push remotely
 #
 if [ -z "$REVISION" ]
 then
-  REVISION="$(git rev-parse $BRANCH)"
+  REVISION="$(git rev-parse $REFSPEC)"
 fi
 
 # Ruby is the default deliver strategy.
@@ -52,11 +51,7 @@ then
   STRATEGY="ruby"
 fi
 
-# Deliver used to be single-server, accounting for that here
-#
-__add_to_deprecations "SERVERS" "v0.8.0"
-SERVERS=$(__remote_friendly "$SERVER $SERVERS $HOSTS")
-HOSTS="$SERVERS"
+HOSTS="$(__remote_friendly "$HOSTS")"
 
 if [ -z "$LOG_FILE" ]
 then
