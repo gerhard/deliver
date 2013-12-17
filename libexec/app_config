@@ -71,3 +71,13 @@ if [ -z "$GENERATED_BRANCH" ]
 then
   GENERATED_BRANCH="generated"
 fi
+
+# As of upstart 1.3, regular users can now define and manage jobs, right
+# inside their $HOME folder. Even if user jobs have been deprecated in
+# favour of session jobs as of 1.7, the most recent LTS, 12.04 still
+# comes with 1.5, so we're good for at least another year
+#
+if [ -z "$LAUNCH_AS" ]
+then
+  LAUNCH_AS="root"
+fi

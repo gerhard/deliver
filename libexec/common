@@ -201,7 +201,7 @@ foreman_export() {
   __exec_if_defined "pre_foreman_export"
 
   status "Exporting services to $SUPERVISOR"
-  local _foreman="foreman export $SUPERVISOR tmp --user $APP_USER --app $APP"
+  local _foreman="foreman export $SUPERVISOR $DELIVER_TO/tmp --user $APP_USER --app $APP"
   test -n "$PORT" && _foreman="$_foreman --port $PORT"
   test -n "$FOREMAN_EXTRAS" && _foreman="$_foreman $FOREMAN_EXTRAS"
 
@@ -218,6 +218,23 @@ foreman_export() {
 launch() {
   __exec_if_defined "pre_launch"
 
+  # Upstart DBUS config change for user jobs to work:
+  # http://bradleyayers.blogspot.co.uk/2011/10/upstart-user-jobs-on-ubuntu-1110.html
+  # sudo service dbus restart
+  #
+  # Load user jobs on system startup:
+  # https://github.com/brightbox/puppet/blob/master/modules/upstart/files/load-user-jobs.conf
+  if [[ $LAUNCH_AS == root ]]
+  then
+    local _prefix="sudo"
+    local _hosts="$HOSTS"
+    local _upstart_jobs_dir="/etc/init/"
+  else
+    local _prefix=""
+    local _hosts="$HOSTS_APP_USER"
+    local _upstart_jobs_dir="~$APP_USER/.init"
+  fi
+
   status "Launching app with $SUPERVISOR"
   # This command, because of the sudo dependency, will use your local $USER.
   # You should be able to log in with $USER to the remote servers, and you
@@ -225,29 +242,33 @@ launch() {
   #
   # I will be tackling this shortly, you really shouldn't neeed sudo
   # privileges to deliver an app. What was I thinking?!?
-  if [[ "$SUPERVISOR" == "bluepill" ]]; then
+  if [[ $SUPERVISOR == bluepill ]]; then
     __remote "
       set -e
-      sudo bluepill ${APP} status | grep up && sudo bluepill ${APP} stop $SILENCE
-      sudo bluepill load $DELIVER_TO/tmp/${APP}.pill $SILENCE
-      " "$HOSTS"
-  elif [[ "$SUPERVISOR" == "smf" ]]; then
+      $_prefix bluepill $APP status | grep up && $_prefix bluepill $APP stop $SILENCE
+      $_prefix bluepill load $DELIVER_TO/tmp/${APP}.pill $SILENCE
+      " "$_hosts"
+  elif [[ $SUPERVISOR == smf ]]; then
     __remote "
       set -e
-      sudo svccfg import $DELIVER_TO/tmp/${APP}*xml $SILENCE
-      svcs -H -o FMRI $APP/* | xargs -I {} sudo svcadm enable -t {} $SILENCE
-      svcs -H -o FMRI $APP/* | xargs -I {} sudo svcadm restart {} $SILENCE
-    " "$HOSTS"
+      $_prefix svccfg import $DELIVER_TO/tmp/$APP*xml $SILENCE
+      svcs -H -o FMRI $APP/* | xargs -I {} $_prefix svcadm enable -t {} $SILENCE
+      svcs -H -o FMRI $APP/* | xargs -I {} $_prefix svcadm restart {} $SILENCE
+    " "$_hosts"
   else
     __remote "
       set -e
-      if [[ \$(sudo initctl list | awk '/^'$APP' / { print \$0 }') =~ 'run' ]]; then
-        sudo stop $APP $SILENCE
+      if [[ \$(ls /etc/init | grep -c $APP[.-]*) > 0 ]]
+      then
+        if [[ \$(sudo initctl list | awk '/^'$APP' / { print \$0 }') =~ 'run' ]]; then
+          sudo stop $APP $SILENCE
+        fi
+        sudo rm -f /etc/init/$APP[.-]*
       fi
-      sudo rm -f /etc/init/$APP[.-]*
-      sudo mv -f $DELIVER_TO/tmp/*conf /etc/init/
-      sudo start $APP $SILENCE
-    " "$HOSTS"
+      test -d $_upstart_jobs_dir || mkdir -p $_upstart_jobs_dir
+      $_prefix mv -f $DELIVER_TO/tmp/*conf $_upstart_jobs_dir
+      $_prefix start $APP $SILENCE
+    " "$_hosts"
   fi
 
   __exec_if_defined "post_launch"

@@ -1,6 +1,8 @@
 ### What's new in deliver 0.8.0
 
 * default mode is now verbose, not compact 
+* user upstart jobs (requires upstart >= 1.3.0)
+
 #### Deprecations
 
 BRANCH has been removed.
