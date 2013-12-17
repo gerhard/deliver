@@ -236,40 +236,9 @@ __monitor_background_jobs() {
   unset background_jobs
 }
 
-# Runs commands in parallel, as background jobs
-#
-__parallelize() {
-  local _job="$1"
-  local _hosts="${2:-"$HOSTS_APP_USER"}"
-
-  background_job_pids=()
-  background_jobs=()
-
-  for _host in $_hosts
-  do
-    local _logged_job="$(eval echo $_job)"
-    if [[ $MODE = "verbose" ]]
-    then
-      echo "$_logged_job"
-    fi
-
-    ( eval "$_job" ) &
-    # WON'T WORK because it captures eval's pid, not the job's pid
-    # Ideally, I want to stay away from eval
-    background_job_pids+=("$!")
-    background_jobs+=("$_logged_job")
-  done
-
-  __monitor_background_jobs
-}
-
 # Multi-host & mode aware
 #
 __remote() {
-  local _remote_job="$1"
-
-  #__parallelize "ssh -o ConnectTimeout=$SSH_TIMEOUT \"\$_host\" \"$_remote_job\""
-
   local _remote_job="$1"
   local _hosts="${2:-"$HOSTS_APP_USER"}"
   background_jobs_pids=()
