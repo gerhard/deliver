@@ -268,8 +268,6 @@ __parallelize() {
 __remote() {
   local _remote_job="$1"
 
-  #__parallelize "ssh -o ConnectTimeout=$SSH_TIMEOUT \"\$_host\" \"$_remote_job\""
-
   local _remote_job="$1"
   local _hosts="${2:-"$HOSTS_APP_USER"}"
   background_jobs_pids=()
