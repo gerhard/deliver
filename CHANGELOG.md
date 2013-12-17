@@ -1,5 +1,7 @@
 ### What's new in deliver 0.8.0
 
+* default mode is now verbose, not compact 
+
 #### Deprecations
 
 BRANCH has been removed.
