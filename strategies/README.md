@@ -51,7 +51,7 @@ If you're already using chef,
 [bootstrap-cookbook](https://github.com/gchef/bootstrap-cookbook) with the
 `apps` recipe will set everything up for you. 
 
-### 1.4 [RVM](http://beginrescueend.com/)
+### 1.4 [RVM](http://rvm.io/)
 
 You might want to install rvm on the server that you'll be delivering your code to. I
 prefer system-wide setups in production. Yes, you've guessed it, use chef's
