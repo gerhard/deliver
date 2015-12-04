@@ -43,9 +43,9 @@ $ git clone git://github.com/gerhard/deliver.git ~/.deliver
 ### 1.2 Add `~/.deliver/bin` to your `$PATH` for access to the `deliver` command-line utility
 
 ```bash
-$ echo 'export PATH="$HOME/.deliver/bin:$PATH"' >> ~/.bash_profile
+$ echo 'export PATH="${PATH}:$HOME/.deliver/bin"' >> ~/.bash_profile
 # if using zsh
-$ echo 'export PATH="$HOME/.deliver/bin:$PATH"' >> ~/.zshrc 
+$ echo 'export PATH="${PATH}:$HOME/.deliver/bin"' >> ~/.zshrc
 ```
 
 ### 1.3 Source your shell profile
