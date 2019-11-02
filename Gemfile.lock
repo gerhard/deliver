@@ -4,7 +4,7 @@ GEM
     ansi (1.4.2)
     coderay (1.0.5)
     colorize (0.5.8)
-    ffi (1.0.11)
+    ffi (1.11.1)
     guard (1.0.1)
       ffi (>= 0.5.0)
       thor (~> 0.14.6)
